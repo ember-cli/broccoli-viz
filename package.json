@@ -1,0 +1,19 @@
+{
+  "name": "broccoli-viz",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stefanpenner/broccoli-viz.git"
+  },
+  "author": "Stefan Penner <stefan.penner@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stefanpenner/broccoli-viz/issues"
+  },
+  "homepage": "https://github.com/stefanpenner/broccoli-viz"
+}
