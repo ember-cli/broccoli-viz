@@ -1,4 +1,5 @@
 var flatten = require('./flatten');
+var dot = require('./dot')
 var assert = require('assert');
 
 describe('flatten', function() {
@@ -36,5 +37,17 @@ describe('flatten', function() {
     assert.equal(result.length, 5);
     assert.deepEqual(result, [e , d, c, a, b]);
   });
+});
 
+describe('dot', function() {
+  it('works with one root', function(){
+    var node = {
+      id: 'a',
+      subtrees: []
+    };
+
+    var result = dot(flatten(node));
+
+    assert.equal(result, 'digraph G {ratio = \"auto\"a [shape=circle, style=\"dotted\", label=\" a (NaNms) \" ]\n');
+  });
 });
