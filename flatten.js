@@ -19,4 +19,4 @@ module.exports = function flatten() {
   }
 
   return result.values;
-}
+};

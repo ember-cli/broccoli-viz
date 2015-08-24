@@ -2,6 +2,13 @@ var flatten = require('./flatten');
 var dot = require('./dot')
 var assert = require('assert');
 
+function toJSON() { return this; }
+
+function node(n) {
+  n.toJSON = toJSON;
+  return n;
+}
+
 describe('flatten', function() {
   it('works with one root', function(){
     var node = {
@@ -14,10 +21,10 @@ describe('flatten', function() {
     assert.deepEqual(result, [node]);
   });
 
-  it('works with 2 levels', function(){
-    var a = { id: 'a', subtrees: [] };
-    var b = { id: 'b', subtrees: [] }
-    var c = { id: 'c', subtrees: [a, b] };
+  it('works with 2 levels', function() {
+    var a = node({ id: 'a', subtrees: [] });
+    var b = node({ id: 'b', subtrees: [] });
+    var c = node({ id: 'c', subtrees: [a, b] });
 
     var result = flatten(c);
 
@@ -25,12 +32,12 @@ describe('flatten', function() {
     assert.deepEqual(result, [c, a, b]);
   });
 
-  it('works with messy tree and 4 levels', function(){
-    var a = { id: 'a', subtrees: [] };
-    var b = { id: 'b', subtrees: [] }
-    var c = { id: 'c', subtrees: [a, b] };
-    var d = { id: 'd', subtrees: [c] };
-    var e = { id: 'e', subtrees: [d, b] };
+  it('works with messy tree and 4 levels', function() {
+    var a = node({ id: 'a', subtrees: [] });
+    var b = node({ id: 'b', subtrees: [] });
+    var c = node({ id: 'c', subtrees: [a, b] });
+    var d = node({ id: 'd', subtrees: [c] });
+    var e = node({ id: 'e', subtrees: [d, b] });
 
     var result = flatten(e);
 
@@ -41,13 +48,13 @@ describe('flatten', function() {
 
 describe('dot', function() {
   it('works with one root', function(){
-    var node = {
+    var a = node({
       id: 'a',
       subtrees: []
-    };
+    });
 
-    var result = dot(flatten(node));
+    var result = dot(flatten(a));
 
-    assert.equal(result, 'digraph G {ratio = \"auto\"a [shape=circle, style=\"dotted\", label=\" a (NaNms) \" ]\n');
+    assert.equal(result, 'digraph G {ratio = \"auto\"a [shape=circle, style=\"dotted\", label=\" a (NaNms) \" ]\n}');
   });
 });
