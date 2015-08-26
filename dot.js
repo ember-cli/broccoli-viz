@@ -4,7 +4,7 @@
 // visualizing: dot -Tpng graph.dot -o graph.png
 
 function formatTime(time) {
-  return Math.floor(time / 1e6) +'ms';
+  return Math.floor(time / 1e6) + 'ms';
 }
 
 module.exports = function dot(nodes) {
@@ -18,9 +18,9 @@ module.exports = function dot(nodes) {
     var annotation = node.annotation || node.description;
     if (annotation) {
       annotation = annotation.replace('(', '\n(');
-      out += ' [shape=box, label=" ' + node.id + ' ' + ' (' + formatTime(node.selfTime) + ') \n' + annotation  + '" ]';
+      out += ' [shape=box, label=" ' + node.id + ' ' + '\n self time (' + formatTime(node.selfTime) + ') \n total time (' + formatTime(node.totalTime) + ')\n' + annotation  + '" ]';
     } else {
-      out += ' [shape=circle, style="dotted", label=" ' + node.id + ' (' + formatTime(node.selfTime) + ') " ]';
+      out += ' [shape=circle, style="dotted", label=" ' + node.id + ' self time (' + formatTime(node.selfTime) + ')\n total time (' + formatTime(node.totalTime) + ')" ]';
     }
 
     out += '\n';

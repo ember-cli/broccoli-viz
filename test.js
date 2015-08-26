@@ -50,11 +50,26 @@ describe('dot', function() {
   it('works with one root', function(){
     var a = node({
       id: 'a',
-      subtrees: []
+      subtrees: [],
+      selfTime: 1000000,
+      totalTime: 1000000
     });
 
     var result = dot(flatten(a));
 
-    assert.equal(result, 'digraph G {ratio = \"auto\"a [shape=circle, style=\"dotted\", label=\" a (NaNms) \" ]\n}');
+    assert.equal(result, 'digraph G {ratio = \"auto\"a [shape=circle, style=\"dotted\", label=\" a self time (1ms)\n total time (1ms)\" ]\n}');
+  });
+
+  it('works with self and total time', function(){
+    var a = node({
+      id: 'a',
+      subtrees: [],
+      selfTime: 1000000,
+      totalTime: 1000000
+    });
+
+    var result = dot(flatten(a));
+
+    assert.equal(result, 'digraph G {ratio = \"auto\"a [shape=circle, style=\"dotted\", label=\" a self time (1ms)\n total time (1ms)\" ]\n}');
   });
 });
