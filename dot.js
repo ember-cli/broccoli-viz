@@ -18,9 +18,17 @@ module.exports = function dot(nodes) {
     var annotation = node.annotation || node.description;
     if (annotation) {
       annotation = annotation.replace('(', '\n(');
-      out += ' [shape=box, label=" ' + node.id + ' ' + '\n self time (' + formatTime(node.selfTime) + ') \n total time (' + formatTime(node.totalTime) + ')\n' + annotation  + '" ]';
+      out += ' [shape=box, label=" ' +
+         node.id + ' \n' +
+         annotation  + '\n' +
+        ' self time (' + formatTime(node.selfTime) + ') \n' +
+        ' total time (' + formatTime(node.totalTime) + ')\n "]';
+
     } else {
-      out += ' [shape=circle, style="dotted", label=" ' + node.id + ' self time (' + formatTime(node.selfTime) + ')\n total time (' + formatTime(node.totalTime) + ')" ]';
+      out += ' [shape=circle, style="dotted", label=" ' + node.id +
+        ' self time (' + formatTime(node.selfTime) +
+        ')\n total time (' + formatTime(node.totalTime) +
+        ')" ]';
     }
 
     out += '\n';
