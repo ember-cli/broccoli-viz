@@ -10,11 +10,13 @@ function RankedNode(node, level) {
   this.level = level;
   this.node = node;
   this.subtrees = [];
+  this.stats = {}; // Bucket for additional stats and metrics
 }
 
 RankedNode.prototype.toJSON  = function() {
   var json = this.node.toJSON();
   json.level = this.level;
+  json.stats = this.stats;
   return json;
 };
 
