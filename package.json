@@ -18,5 +18,9 @@
   "homepage": "https://github.com/stefanpenner/broccoli-viz",
   "devDependencies": {
     "mocha": "^2.0.1"
+  },
+  "dependencies": {
+    "chalk": "^1.1.1",
+    "deep-diff": "^0.3.2"
   }
 }
