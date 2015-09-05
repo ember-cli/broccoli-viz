@@ -1,8 +1,19 @@
+var BlankObject = require('blank-object');
+
+function getId(obj) {
+  if (obj.id) { return obj.id; }
+
+  return obj;
+}
 module.exports = Set;
 
-function Set() {
+function Set(initialValues) {
   this.values = [];
-  this.map = Object.create(null);
+  this.map = new BlankObject();
+
+  if (initialValues) {
+    initialValues.forEach(this.add, this);
+  }
 }
 
 Set.prototype.has = function(obj) {
@@ -10,19 +21,30 @@ Set.prototype.has = function(obj) {
 };
 
 Set.prototype.add = function(obj) {
-  if (this.map[obj.id] !== true) {
+  var id = getId(obj);
+
+  if (this.map[id] !== true) {
     this.values.push(obj);
-    this.map[obj.id] = true;
+    this.map[id] = true;
   }
 
   return this;
 };
 
 Set.prototype.delete = function(obj) {
-  if (this.map[obj.id] !== false) {
-    this.values.push(obj);
-    this.map[obj.id] = true;
+  var id = getId(obj);
+
+  if (this.map[id] !== false) {
+    var index = this.values.indexOf(obj);
+    this.values.splice(index, 1);
+    this.map[id] = true;
   }
+
+  return this;
+};
+
+Set.prototype.deleteAll = function (values) {
+  values.forEach(this.delete, this);
 
   return this;
 };

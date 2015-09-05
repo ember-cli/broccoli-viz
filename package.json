@@ -20,7 +20,9 @@
     "mocha": "^2.0.1"
   },
   "dependencies": {
+    "blank-object": "^1.0.0",
     "chalk": "^1.1.1",
-    "deep-diff": "^0.3.2"
+    "deep-diff": "^0.3.2",
+    "sprintf-js": "^1.0.3"
   }
 }

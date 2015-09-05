@@ -1,8 +1,8 @@
-var flatten = require('./flatten');
-var dot = require('./dot')
+var flatten = require('../flatten');
+var dot = require('../dot');
 var assert = require('assert');
-var rank = require('./rank');
-var processGraph  = require('./process');
+var rank = require('../rank');
+var processGraph  = require('../process');
 
 function toJSON() { return this; }
 
