@@ -49,6 +49,12 @@ Set.prototype.deleteAll = function (values) {
   return this;
 };
 
+Set.prototype.setDiff = function (values) {
+  var result = new this.constructor(this.values.slice());
+  result.deleteAll(values);
+  return result;
+};
+
 Set.prototype.forEach = function(_cb, binding) {
   var values = this.values;
   var cb = arguments.length === 2 ? _cb.bind(binding) : _cb;
