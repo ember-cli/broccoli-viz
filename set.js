@@ -34,10 +34,10 @@ Set.prototype.add = function(obj) {
 Set.prototype.delete = function(obj) {
   var id = getId(obj);
 
-  if (this.map[id] !== false) {
+  if (this.map[id]) {
     var index = this.values.indexOf(obj);
     this.values.splice(index, 1);
-    this.map[id] = true;
+    delete this.map[id];
   }
 
   return this;
