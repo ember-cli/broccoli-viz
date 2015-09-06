@@ -34,10 +34,10 @@ Set.prototype.add = function(obj) {
 Set.prototype.delete = function(obj) {
   var id = getId(obj);
 
-  if (this.map[id] !== false) {
+  if (this.map[id]) {
     var index = this.values.indexOf(obj);
     this.values.splice(index, 1);
-    this.map[id] = true;
+    delete this.map[id];
   }
 
   return this;
@@ -47,6 +47,12 @@ Set.prototype.deleteAll = function (values) {
   values.forEach(this.delete, this);
 
   return this;
+};
+
+Set.prototype.setDiff = function (values) {
+  var result = new this.constructor(this.values.slice());
+  result.deleteAll(values);
+  return result;
 };
 
 Set.prototype.forEach = function(_cb, binding) {
