@@ -63,7 +63,7 @@ function diffJSON(a, b, options) {
 
   a = a !== undefined ? a : {};
   b = b !== undefined ? b : {};
-  
+
 
   var aKeys = Object.keys(a).sort();
   var bKeys = Object.keys(b).sort();
