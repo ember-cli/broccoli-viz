@@ -37,6 +37,8 @@ function valueLength(value) {
     return 0;
   } else if (value.before === undefined) {
     return 1;
+  } else if (typeof value.before === 'object') {
+    return 0;
   } else {
     return sprintf('%.2f', value.before).length;
   }
@@ -139,7 +141,8 @@ function printNumericValueRangeDiff(diff, options) {
 
   var lhs = (diff.before !== diff.after) ? diff.before : '';
   var separator = (diff.before !== diff.after) ? '→' : '=';
-  var rhs = diff.after && sprintf('%.2f', diff.after) || '';
+  var rhs = typeof diff.after === 'number' ||
+           typeof diff.after === 'string' ? sprintf('%.2f', diff.after) : '';
 
   var leftColumn = sprintf('%' + options.maxBeforeWidth + 's', lhs);
   var centerColumn = colorize(' ' + separator + ' ');
