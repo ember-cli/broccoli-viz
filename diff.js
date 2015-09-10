@@ -172,8 +172,12 @@ function printObjectDiff(diff, options) {
     maxBeforeWidth = options.maxBeforeWidth;
     maxAfterWidth = options.maxAfterWidth;
   } else {
-    maxBeforeWidth = keys.reduce(function (max, key) { return Math.max(max, valueLength(diff[key], 'before')); }, 0);
-    maxAfterWidth = keys.reduce(function (max, key) { return Math.max(max, valueLength(diff[key], 'after')); }, 0);
+    maxBeforeWidth = keys.reduce(function (max, key) {
+      return Math.max(max, valueLength(diff[key], 'before'));
+    }, 0);
+    maxAfterWidth = keys.reduce(function (max, key) {
+      return Math.max(max, valueLength(diff[key], 'after'));
+    }, 0);
   }
 
   process.stdout.write("\n");
