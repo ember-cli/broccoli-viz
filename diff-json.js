@@ -1,7 +1,7 @@
 /* global Set:true */
 var Set = require('./set');
 var assert = require('assert');
-var isPrimitive = require('utils').isPrimitive;
+var isPrimitive = require('./utils').isPrimitive;
 
 module.exports = diffJSON;
 
