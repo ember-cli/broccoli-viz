@@ -139,7 +139,7 @@ function printNumericValueRangeDiff(diff, options) {
 
   var lhs = (diff.before !== diff.after) ? diff.before : '';
   var separator = (diff.before !== diff.after) ? '→' : '=';
-  var rhs = sprintf('%.2f', diff.after);
+  var rhs = diff.after && sprintf('%.2f', diff.after) || '';
 
   var leftColumn = sprintf('%' + options.maxBeforeWidth + 's', lhs);
   var centerColumn = colorize(' ' + separator + ' ');
