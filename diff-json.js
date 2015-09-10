@@ -116,7 +116,6 @@ function diffArray(aValue, bValue, options) {
     aItem = aValue[aIdx];
     bItem = bValue[bIdx];
 
-    debugger;
     switch (compare(aItem, bItem)) {
       case 0:
         result.push(diffJSON(aItem, bItem, options));
