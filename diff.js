@@ -69,7 +69,7 @@ function sortedKeys(obj) {
       } else if (rangeType === 'string') {
         return 3;
       } else {
-        throw new Error("Unexpected value range type: " + rangeType);
+        return 0;
       }
     } else if (! Array.isArray(a)) {
       return 4;
