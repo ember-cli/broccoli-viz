@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/stefanpenner/broccoli-viz",
   "devDependencies": {
-    "mocha": "^2.0.1"
+    "mocha": "^2.5.1"
   },
   "dependencies": {
     "blank-object": "^1.0.0",
