@@ -1,66 +1,47 @@
 'use strict';
 
-// largest to smaller
-function byTotalTime(x, y) {
-  return y.totalTime - x.totalTime;
-}
+function visitPreOrder(node, graph, parent, offset, cb) {
+  cb(node, graph, parent, offset);
 
-var nextId = 0;
-
-function guid(obj) {
-  if (obj === undefined) {
-    return "undefined";
-  } else if(obj === null) {
-    return "null";
-  } else if (typeof obj === "number") {
-    return "n_" + obj;
-  } else if (typeof obj === "string") {
-    return "str_" + obj;
-  }
-
-  if (! obj.hasOwnProperty('_viz_id')) {
-    obj._viz_id = (++nextId);
-  }
-
-  return obj._viz_id;
-}
-
-
-function RankedNode(node, level) {
-  this.id = node.id;
-  this.treeId = guid(node.tree);
-  this.level = level;
-  this.node = node;
-  this.subtrees = [];
-  this.stats = {}; // Bucket for additional stats and metrics
-}
-
-function normalizeTimeInNs(time) {
-  return Math.round(time/ 1e4) / 1e2;
-}
-
-RankedNode.prototype.toJSON  = function() {
-  var json = this.node.toJSON();
-  json.treeId = this.treeId;
-  json.level = this.level;
-  json.stats = this.stats;
-  json.selfTime = normalizeTimeInNs(json.selfTime);
-  json.totalTime = normalizeTimeInNs(json.totalTime);
-  return json;
-};
-
-module.exports = function level(root, theLevel) {
-  var currentLevel = arguments.length === 1 ? 0 : theLevel;
-
-  // TODO: add ranking system
-  var leveled = new RankedNode(root, currentLevel);
-
-  var subtrees = root.subtrees;
-  if (subtrees.length === 0 ) { return leveled; }
-
-  leveled.subtrees = subtrees.sort(byTotalTime).map(function(unleveled, i) {
-    return level(unleveled, currentLevel + i);
+  node.children.forEach(function (id, i) {
+    var child = graph.nodesById[id];
+    visitPreOrder(child, graph, node, i, cb);
   });
+}
 
-  return leveled;
+function annotateLevel(node, graph, parent, offset) {
+  var parentLevel = typeof parent === 'object' ? parent.stats._broccoli_viz.level : 0;
+
+  node.stats._broccoli_viz.level = parentLevel + offset;
+
+  return node;
+}
+
+/**
+  @param {graph} Object 
+  @param {graph.nodes} Array array of heimdall nodes by json order
+  @param {graph.nodesById} Array array of heimdall nodes by id
+*/
+module.exports = function rank(graph, theLevel) {
+  function byTotalTime(childId1, childId2) {
+    var c1 = graph.nodesById[childId1];
+    var c2 = graph.nodesById[childId2];
+
+    var c1v = c1.stats._broccoli_viz;
+    var c2v = c2.stats._broccoli_viz;
+
+    return c2v.totalTime - c1v.totalTime;
+  }
+
+  function sortChildren(node) {
+    node.children.sort(byTotalTime);
+  }
+
+  graph.nodes.forEach(sortChildren);
+
+  visitPreOrder(graph.nodes[0], graph, undefined, 0, annotateLevel);
+
+  return graph;
 };
+
+// 

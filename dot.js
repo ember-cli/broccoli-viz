@@ -33,58 +33,44 @@ function penWidth(level) {
   return 0.5;
 }
 
-function nodesById(nodes) {
-  var result = new Array(nodes.length);
-  nodes.forEach(function(node) {
-    result[node.id] = node;
-  });
-  return result;
-}
-// reds8
-module.exports = function dot(nodes) {
+module.exports = function dot(graph) {
   var out = 'digraph G {';
   out += ' ratio = "auto"';
 
-  var byId = nodesById(nodes);
+  graph.nodes.forEach(function(node) {
+    var selfTime = node.stats.time.self;
+    var totalTime = node.stats._broccoli_viz.totalTime;
 
-  nodes.map(function(node) {
-    return node.toJSON();
-  }).forEach(function(node) {
-    out += ' ' + node.id;
-    var annotation = node.annotation || node.description;
-    if (annotation) {
-      annotation = annotation.replace('(', '\n(');
+    out += ' ' + node._id;
+    var annotation = node.id.name;
+    annotation = annotation.replace('(', '\n(');
 
-      var shape, style;
+    var shape, style;
 
-      if (annotation.indexOf('Merge') > -1) {
-        shape = 'circle';
-        style = 'dashed';
-      } else if (annotation.indexOf('Funnel') > -1) {
-        shape = 'box';
-        style = 'dashed';
-      } else {
-        shape = 'box';
-        style = 'solid';
-      }
-
-      out += ' [shape=' + shape + ', style=' + style + ', colorscheme="rdylbu9", color=' + selfTimeColor(node.selfTime) +', label=" ' +
-         node.id + ' \n' +
-         annotation  + '\n' +
-        ' self time (' + formatTime(node.selfTime) + ') \n' +
-        ' total time (' + formatTime(node.totalTime) + ')\n "]';
-
+    if (annotation.indexOf('Merge') > -1) {
+      shape = 'circle';
+      style = 'dashed';
+    } else if (annotation.indexOf('Funnel') > -1) {
+      shape = 'box';
+      style = 'dashed';
     } else {
-      out += ' [shape=circle, style="dotted", label=" ' + node.id +
-        ' self time (' + formatTime(node.selfTime) +
-        ')\n total time (' + formatTime(node.totalTime) +
-        ')" ]';
+      shape = 'box';
+      style = 'solid';
     }
 
+    out += ' [shape=' + shape + ', style=' + style + ', colorscheme="rdylbu9", color=' + selfTimeColor(selfTime) +', label=" ' +
+       node._id + ' \n' +
+       annotation  + '\n' +
+      ' self time (' + formatTime(selfTime) + ') \n' +
+      ' total time (' + formatTime(totalTime) + ')\n "]';
+
     out += '\n';
-    node.subtrees.forEach(function(child) {
-      var level = node.level + byId[child].level;
-      out += ' ' + child + ' -> ' + node.id + '[penwidth=' + penWidth(level) + ' ] \n';
+
+    node.children.forEach(function(childId) {
+      // such doubts
+      // var level = node.level + byId[child].level;
+      var level = graph.nodesById[childId].stats._broccoli_viz.level;
+      out += ' ' + childId + ' -> ' + node._id + '[penwidth=' + penWidth(level) + ' ] \n';
     });
   });
   out += '}';

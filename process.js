@@ -1,6 +1,6 @@
 var rank = require('./rank');
-var flatten = require('./flatten');
+var buildGraph = require('./build-graph');
 
-module.exports = function(g) {
-  return flatten(rank(g));
+module.exports = function processNodes(nodes) {
+  return rank(buildGraph(nodes));
 };
