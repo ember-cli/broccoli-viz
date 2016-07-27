@@ -27,3 +27,24 @@ dot -Tpdf broccoli-viz.0.dot > broccoli-viz.0.pdf
 ```
 
 You can then explore the PDF to see where time is being spent on your build.
+
+### Stats Filtering
+
+If you want to show stats other than, or in addition to, the time stats, you can
+pass a `--stats` option one or more times.  These are simple glob patterns
+matched against the full stats key.
+
+If no `--stats` option is passed, the default is `--stats=time.self --stats=time.total`
+
+Examples:
+
+```sh
+# Show time stats and individual fs counts
+broccoli-viz --stats='time.*' --stats='fs.*.count' broccoli-viz.0.json > broccoli-viz.0.dot
+
+# Show time stats and lstat, mkdir counts
+broccoli-viz --stats='time.*' --stats='fs.lstatSync.count' --stats='fs.mkdirSync.count' broccoli-viz.0.json > broccoli-viz.0.dot
+
+# Show all stats
+broccoli-viz --stats='*' broccoli-viz.0.json > broccoli-viz.0.dot
+```

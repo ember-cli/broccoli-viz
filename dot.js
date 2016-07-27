@@ -1,7 +1,4 @@
-// usage: DUMP_BROCCOLI_TREES=true broccoli serve
-// results: ./broccoli-tree.json
-// converting to dot: node $BROCCOLI_PATH/scripts/graph broccoli-trees.json > graph.dot
-// visualizing: dot -Tpng graph.dot -o graph.png
+var statsGlob = require('./stats-glob');
 
 function formatTime(time) {
   return Math.floor(time / 1e6) + 'ms';
@@ -22,24 +19,45 @@ function selfTimeColor(n) {
   return 9;
 }
 
-function edgeColor(r) {
-  var level = r + 1;
-  return Math.max(1, Math.min(level, 4));
-}
-
 function penWidth(level) {
   if (level === 0) return 3;
   if (level === 1) return 1.5;
   return 0.5;
 }
 
-module.exports = function dot(graph) {
+function statsString(node, patterns) {
+  var selfTime = node.stats.time.self;
+  node.stats.time.total = node.stats._broccoli_viz.totalTime;
+
+  var matchingStats = statsGlob(node.stats, patterns);
+
+  
+  var result = matchingStats.map(function (stat) {
+    var key = stat.key;
+    var value = stat.value;
+
+    if (stat.isTime) {
+      value = formatTime(value);
+    }
+
+    return ' ' + key + ' (' + value + ') \n';
+  });
+
+  return result.join('');
+}
+
+module.exports = function dot(graph, options) {
   var out = 'digraph G {';
   out += ' ratio = "auto"';
 
+  var patterns = options && options.stats;
+
+  if (!patterns) {
+    patterns = ['time.self', 'time.total'];
+  }
+
   graph.nodes.forEach(function(node) {
     var selfTime = node.stats.time.self;
-    var totalTime = node.stats._broccoli_viz.totalTime;
 
     out += ' ' + node._id;
     var annotation = node.id.name;
@@ -61,8 +79,8 @@ module.exports = function dot(graph) {
     out += ' [shape=' + shape + ', style=' + style + ', colorscheme="rdylbu9", color=' + selfTimeColor(selfTime) +', label=" ' +
        node._id + ' \n' +
        annotation  + '\n' +
-      ' self time (' + formatTime(selfTime) + ') \n' +
-      ' total time (' + formatTime(totalTime) + ')\n "]';
+       statsString(node, patterns) +
+       ' "]';
 
     out += '\n';
 

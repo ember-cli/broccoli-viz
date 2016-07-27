@@ -2,14 +2,35 @@
 
 var viz = require('..');
 var fs = require('fs');
-var inputPath = process.argv[2];
 
-if (!inputPath) {
-  throw new Error('Usage: node graph path/to/broccoli-tree.json');
+var argv = require('minimist')(process.argv.slice(2));
+
+function usage() {
+  console.error('Usage: broccoli-viz [--stats=pattern] FILE');
+  process.exit(1);
 }
 
-var json = JSON.parse(fs.readFileSync(inputPath).toString());
+function help() {
+  console.log('Usage: broccoli-viz [--stats=pattern] FILE');
+  process.exit(0);
+}
 
-console.log(viz.dot(viz.process(json.nodes)));
+if (argv.h || argv.help) {
+  help();
+}
+
+var inputPath = argv._[0];
+if (! inputPath) {
+  usage();
+}
+
+
+var json = JSON.parse(fs.readFileSync(inputPath).toString());
+var patterns = argv.stats;
+if (patterns && !Array.isArray(patterns)) {
+  patterns = [patterns];
+}
+
+console.log(viz.dot(viz.process(json.nodes), { stats: patterns }));
 
 
