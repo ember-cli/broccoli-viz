@@ -1,16 +1,16 @@
-var match = require('minimatch');
-
-function anyMatch(key, patterns) {
-  return patterns.some(function (pattern) {
-    return match(key, pattern);
-  });
-}
+var MatcherCollection = require('matcher-collection');
+var timeMatcher = new MatcherCollection([
+  'time.*',
+  '*.time.*',
+]);
 
 function collectStats(stats, patterns, prefix) {
   var result = [];
   var key;
   var value;
   var isTime;
+
+  var matcher = new MatcherCollection(patterns);
 
   for (var prop in stats) {
     key = prefix + prop;
@@ -19,8 +19,8 @@ function collectStats(stats, patterns, prefix) {
     if (typeof value === 'object') {
       result = result.concat(collectStats(value, patterns, key + '.'));
     } else {
-      if (anyMatch(key, patterns)) {
-        isTime = (prop === 'time') || match(key, 'time.*') || match(key, '*.time.*');
+      if (matcher.match(key)) {
+        isTime = (prop === 'time') || timeMatcher.match(key);
 
         result.push({
           key: key,
