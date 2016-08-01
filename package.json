@@ -1,10 +1,10 @@
 {
   "name": "broccoli-viz",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "",
   "main": "index.js",
   "bin": {
-    "ember": "./bin/broccoli-viz"
+    "broccoli-viz": "./bin/broccoli-viz"
   },
   "scripts": {
     "test": "mocha test",
