@@ -1,127 +1,129 @@
-var flatten = require('../flatten');
 var dot = require('../dot');
 var assert = require('assert');
 var rank = require('../rank');
 var processGraph  = require('../process');
-
-function toJSON() { return this; }
-
-function node(n) {
-  n.toJSON = toJSON;
-  return n;
-}
-
-describe('flatten', function() {
-  it('works with one root', function(){
-    var node = {
-      subtrees: []
-    };
-
-    var result = flatten(node);
-
-    assert.equal(result.length, 1);
-    assert.deepEqual(result, [node]);
-  });
-
-  it('works with 2 levels', function() {
-    var a = node({ id: 'a', subtrees: [] });
-    var b = node({ id: 'b', subtrees: [] });
-    var c = node({ id: 'c', subtrees: [a, b] });
-
-    var result = flatten(c);
-
-    assert.equal(result.length, 3);
-    assert.deepEqual(result, [c, a, b]);
-  });
-
-  it('works with messy tree and 4 levels', function() {
-    var a = node({ id: 'a', subtrees: [] });
-    var b = node({ id: 'b', subtrees: [] });
-    var c = node({ id: 'c', subtrees: [a, b] });
-    var d = node({ id: 'd', subtrees: [c] });
-    var e = node({ id: 'e', subtrees: [d, b] });
-
-    var result = flatten(e);
-
-    assert.equal(result.length, 5);
-    assert.deepEqual(result, [e , d, c, a, b]);
-  });
-});
+var nodesById = require('../nodes-by-id');
+var buildGraph = require('../build-graph');
 
 describe('dot', function() {
-  it('works with one root', function(){
-    var a = node({
-      id: 'a',
-      subtrees: [],
-      selfTime: 1000000,
-      totalTime: 1000000
-    });
+  var a = {
+    _id: 1,
+    id: { name: 'a', },
+    stats: {
+      time: {
+        self: 40 * 1e6,
+      },
+      fs: {
+        lstatSync: {
+          count: 10,
+          time: 20 * 1e6
+        },
+        openSync: {
+          count: 2,
+          time: 15 * 1e6,
+        },
+      },
+    },
+    children: []
+  };
 
-    var result = dot(processGraph(a));
+  it('displays self and total time by default', function() {
+    var result = dot(processGraph([a]));
 
-    assert.equal(result, 'digraph G { ratio = \"auto\" a [shape=circle, style=\"dotted\", label=\" a self time (1ms)\n total time (1ms)\" ]\n}');
+    assert.equal(result, 'digraph G { ratio = \"auto\" 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\" 1 \na\n time.self (40ms) \n time.total (40ms) \n \"]\n}');
+
+    result = dot(processGraph([a], { stats: null }));
+
+    assert.equal(result, 'digraph G { ratio = \"auto\" 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\" 1 \na\n time.self (40ms) \n time.total (40ms) \n \"]\n}');
+
+    result = dot(processGraph([a], { stats: undefined }));
+
+    assert.equal(result, 'digraph G { ratio = \"auto\" 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\" 1 \na\n time.self (40ms) \n time.total (40ms) \n \"]\n}');
   });
 
-  it('works with self and total time', function(){
-    var a = node({
-      id: 'a',
-      subtrees: [],
-      selfTime: 1000000,
-      totalTime: 1000000
-    });
+  it('can display stats matching a glob', function() {
+    var result = dot(processGraph([a]), { stats: ['time.self'] });
 
-    var result = dot(processGraph(a));
+    assert.equal(result, 'digraph G { ratio = \"auto\" 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\" 1 \na\n time.self (40ms) \n \"]\n}');
 
-    assert.equal(result, 'digraph G { ratio = \"auto\" a [shape=circle, style=\"dotted\", label=\" a self time (1ms)\n total time (1ms)\" ]\n}');
+    result = dot(processGraph([a]), { stats: ['fs.*.count'] });
+
+    assert.equal(result, 'digraph G { ratio = \"auto\" 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\" 1 \na\n fs.lstatSync.count (10) \n fs.openSync.count (2) \n \"]\n}');
+  });
+
+  it('treats stats named time as nanoseconds', function() {
+    result = dot(processGraph([a]), { stats: ['fs.lstatSync.*'] });
+
+    assert.equal(result, 'digraph G { ratio = \"auto\" 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\" 1 \na\n fs.lstatSync.count (10) \n fs.lstatSync.time (20ms) \n \"]\n}');
+  });
+
+  it('aliases totalTime to time.total', function() {
+    var result = dot(processGraph([a]), { stats: ['time.total'] });
+
+    assert.equal(result, 'digraph G { ratio = \"auto\" 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\" 1 \na\n time.total (40ms) \n \"]\n}');
+  });
+
+  it('can display stats matching multiple globs', function() {
+    var result = dot(processGraph([a]), { stats: ['time.*', 'fs.*.count'] });
+
+    assert.equal(result, 'digraph G { ratio = \"auto\" 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\" 1 \na\n time.self (40ms) \n time.total (40ms) \n fs.lstatSync.count (10) \n fs.openSync.count (2) \n \"]\n}');
   });
 });
 
 
 describe('rank', function() {
-
   it('empty', function(){
-    var g = node({
-      id: 1,
-      subtrees: [],
-      selfTime: 0,
-      totalTime: 5
-    });
+    var g = buildGraph([
+      {
+        _id: 1,
+        stats: {
+          time: {
+            self: 0,
+          }
+        },
+        children: []
+      }
+    ]);
 
-    var path = flatten(rank(g)).map(mapById);
+    var ranked = rank(g).nodes;
 
-    assert.deepEqual(path, [1]);
+    assert.deepEqual(ranked.map(byLevel), [0]);
   });
 
-  function mapById(node) {
-    return node.id;
-  }
-
-
-  function byRank(a, b) {
-    return a.rank - b.rank;
+  function byLevel(node) {
+    return node.stats._broccoli_viz.level;
   }
 
   it('one path', function(){
-    var f = node({
-      id: 1,
-      subtrees: [],
-      selfTime: 0,
-      totalTime: 5
-    });
+    var a = {
+      _id: 2,
+      stats: {
+        time: {
+          self: 0,
+        },
+      },
+      children: [1]
+    };
 
-    var g = node({
-      id: 2,
-      subtrees: [f],
-      selfTime: 0,
-      totalTime: 5
-    });
+    var b = {
+      _id: 1,
+      stats: {
+        time: {
+          self: 0,
+        },
+      },
+      children: []
+    };
 
-    var path = flatten(rank(g));
 
-    assert.deepEqual(path.map(mapById), [2, 1]);
+    var g = buildGraph([a, b]);
+
+    var ranked = rank(g).nodes;
+
+    assert.deepEqual(ranked.map(byLevel), [0, 0]);
   });
 
-  it('slight more complex graph', function() {
+  it('slighty more complex graph', function() {
     /*
             ┌───────────────┐
             │#1 TotalTime: 5│
@@ -147,138 +149,67 @@ describe('rank', function() {
 └───────────────┘     └────────────────┘
     */
 
-    var a = node({
-      id: 7,
-      subtrees: [],
-      selfTime: 0,
-      totalTime: 1
-    });
+    var g = buildGraph([{
+      _id: 1,
+      stats: {
+        time: {
+          self: 0,
+        },
+      },
+      children: [3, 2]
+    }, {
+      _id: 2,
+      stats: {
+        time: {
+          self: 2,
+        },
+      },
+      children: [4]
+    }, {
+      _id: 3,
+      stats: {
+        time: {
+          self: 1,
+        },
+      },
+      children: [5]
+    }, {
+      _id: 4,
+      stats: {
+        time: {
+          self: 0,
+        },
+      },
+      children: [6]
+    }, {
+      _id: 5,
+      stats: {
+        time: {
+          self: 1,
+        },
+      },
+      children: [7]
+    }, {
+      _id: 6,
+      stats: {
+        time: {
+          self: 2,
+        },
+      },
+      children: []
+    }, {
+      _id: 7,
+      stats: {
+        time: {
+          self: 1,
+        },
+      },
+      children: []
+    }]);
 
-    var b = node({
-      id: 6,
-      subtrees: [],
-      selfTime: 0,
-      totalTime: 2
-    });
+    var ranked = rank(g).nodes;
 
-    var c = node({
-      id: 5,
-      subtrees: [a],
-      selfTime: 0,
-      totalTime: 2
-    });
-
-    var d = node({
-      id: 4,
-      subtrees: [b],
-      selfTime: 0,
-      totalTime: 2
-    });
-
-    var e = node({
-      id: 3,
-      subtrees: [c],
-      selfTime: 0,
-      totalTime: 3
-    });
-
-    var f = node({
-      id: 2,
-      subtrees: [d],
-      selfTime: 0,
-      totalTime: 4
-    });
-
-    var g = node({
-      id: 1,
-      subtrees: [e, f],
-      selfTime: 0,
-      totalTime: 5
-    });
-
-    var path = flatten(rank(g)).sort(byRank);
-
-    assert.deepEqual(path.map(mapById), [1,2,4,6,3,5,7]);
-  });
-
-  it('slight more complex graph \w tie', function() {
-    /*
-            ┌───────────────┐
-            │#1 TotalTime: 5│
-            └───────────────┘
-                    │
-        ╔═══════════╩──────────┐
-        ║                      │
-        ▼                      ▼
-┌───────────────┐      ┌───────────────┐
-│#2 TotalTime: 4│      │#3 TotalTime: 4│
-└───────────────┘      └───────────────┘
-        ║                      │
-        ║                      │
-        ▼                      ▼
-┌───────────────┐      ┌───────────────┐
-│#4 TotalTime: 2│      │#5 TotalTime: 2│
-└───────────────┘      └───────────────┘
-        ║                      │
-        ║                      │
-        ▼                      ▼
-┌───────────────┐     ┌────────────────┐
-│#6 TotalTime: 2│     │#7 TotalTime: 2 │
-└───────────────┘     └────────────────┘
-    */
-
-    var a = node({
-      id: 7,
-      subtrees: [],
-      selfTime: 0,
-      totalTime: 2
-    });
-
-    var b = node({
-      id: 6,
-      subtrees: [],
-      selfTime: 0,
-      totalTime: 2
-    });
-
-    var c = node({
-      id: 5,
-      subtrees: [a],
-      selfTime: 0,
-      totalTime: 2
-    });
-
-    var d = node({
-      id: 4,
-      subtrees: [b],
-      selfTime: 0,
-      totalTime: 2
-    });
-
-    var e = node({
-      id: 3,
-      subtrees: [c],
-      selfTime: 0,
-      totalTime: 4
-    });
-
-    var f = node({
-      id: 2,
-      subtrees: [d],
-      selfTime: 0,
-      totalTime: 4
-    });
-
-    var g = node({
-      id: 1,
-      subtrees: [e, f],
-      selfTime: 0,
-      totalTime: 5
-    });
-
-    var path = flatten(rank(g)).sort(byRank);
-
-    assert.deepEqual(path.map(mapById), [1,3,5,7,2,4,6]);
+    assert.deepEqual(ranked.map(byLevel), [0, 0, 1, 0, 1, 0, 1]);
   });
 
 });

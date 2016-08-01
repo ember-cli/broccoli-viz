@@ -1,7 +1,4 @@
-// usage: DUMP_BROCCOLI_TREES=true broccoli serve
-// results: ./broccoli-tree.json
-// converting to dot: node $BROCCOLI_PATH/scripts/graph broccoli-trees.json > graph.dot
-// visualizing: dot -Tpng graph.dot -o graph.png
+var statsGlob = require('./stats-glob');
 
 function formatTime(time) {
   return Math.floor(time / 1e6) + 'ms';
@@ -22,69 +19,76 @@ function selfTimeColor(n) {
   return 9;
 }
 
-function edgeColor(r) {
-  var level = r + 1;
-  return Math.max(1, Math.min(level, 4));
-}
-
 function penWidth(level) {
   if (level === 0) return 3;
   if (level === 1) return 1.5;
   return 0.5;
 }
 
-function nodesById(nodes) {
-  var result = new Array(nodes.length);
-  nodes.forEach(function(node) {
-    result[node.id] = node;
+function statsString(node, patterns) {
+  var selfTime = node.stats.time.self;
+  node.stats.time.total = node.stats._broccoli_viz.totalTime;
+
+  var matchingStats = statsGlob(node.stats, patterns);
+
+  
+  var result = matchingStats.map(function (stat) {
+    var key = stat.key;
+    var value = stat.value;
+
+    if (stat.isTime) {
+      value = formatTime(value);
+    }
+
+    return ' ' + key + ' (' + value + ') \n';
   });
-  return result;
+
+  return result.join('');
 }
-// reds8
-module.exports = function dot(nodes) {
+
+module.exports = function dot(graph, options) {
   var out = 'digraph G {';
   out += ' ratio = "auto"';
 
-  var byId = nodesById(nodes);
+  var patterns = options && options.stats;
 
-  nodes.map(function(node) {
-    return node.toJSON();
-  }).forEach(function(node) {
-    out += ' ' + node.id;
-    var annotation = node.annotation || node.description;
-    if (annotation) {
-      annotation = annotation.replace('(', '\n(');
+  if (!patterns) {
+    patterns = ['time.self', 'time.total'];
+  }
 
-      var shape, style;
+  graph.nodes.forEach(function(node) {
+    var selfTime = node.stats.time.self;
 
-      if (annotation.indexOf('Merge') > -1) {
-        shape = 'circle';
-        style = 'dashed';
-      } else if (annotation.indexOf('Funnel') > -1) {
-        shape = 'box';
-        style = 'dashed';
-      } else {
-        shape = 'box';
-        style = 'solid';
-      }
+    out += ' ' + node._id;
+    var annotation = node.id.name;
+    annotation = annotation.replace('(', '\n(');
 
-      out += ' [shape=' + shape + ', style=' + style + ', colorscheme="rdylbu9", color=' + selfTimeColor(node.selfTime) +', label=" ' +
-         node.id + ' \n' +
-         annotation  + '\n' +
-        ' self time (' + formatTime(node.selfTime) + ') \n' +
-        ' total time (' + formatTime(node.totalTime) + ')\n "]';
+    var shape, style;
 
+    if (annotation.indexOf('Merge') > -1) {
+      shape = 'circle';
+      style = 'dashed';
+    } else if (annotation.indexOf('Funnel') > -1) {
+      shape = 'box';
+      style = 'dashed';
     } else {
-      out += ' [shape=circle, style="dotted", label=" ' + node.id +
-        ' self time (' + formatTime(node.selfTime) +
-        ')\n total time (' + formatTime(node.totalTime) +
-        ')" ]';
+      shape = 'box';
+      style = 'solid';
     }
 
+    out += ' [shape=' + shape + ', style=' + style + ', colorscheme="rdylbu9", color=' + selfTimeColor(selfTime) +', label=" ' +
+       node._id + ' \n' +
+       annotation  + '\n' +
+       statsString(node, patterns) +
+       ' "]';
+
     out += '\n';
-    node.subtrees.forEach(function(child) {
-      var level = node.level + byId[child].level;
-      out += ' ' + child + ' -> ' + node.id + '[penwidth=' + penWidth(level) + ' ] \n';
+
+    node.children.forEach(function(childId) {
+      // such doubts
+      // var level = node.level + byId[child].level;
+      var level = graph.nodesById[childId].stats._broccoli_viz.level;
+      out += ' ' + childId + ' -> ' + node._id + '[penwidth=' + penWidth(level) + ' ] \n';
     });
   });
   out += '}';

@@ -1,10 +1,14 @@
 {
   "name": "broccoli-viz",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "ember": "./bin/broccoli-viz"
+  },
   "scripts": {
-    "test": "mocha test"
+    "test": "mocha test",
+    "test:debug": "mocha --no-timeouts debug test/"
   },
   "repository": {
     "type": "git",
@@ -23,6 +27,8 @@
     "blank-object": "^1.0.0",
     "chalk": "^1.1.2",
     "deep-diff": "^0.3.4",
+    "lodash": "^4.14.0",
+    "minimist": "^1.2.0",
     "sprintf-js": "^1.0.3"
   }
 }
