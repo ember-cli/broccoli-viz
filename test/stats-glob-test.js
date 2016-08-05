@@ -1,5 +1,5 @@
+var statsGlob = require('../lib/stats-glob');
 var assert = require('assert');
-var statsGlob = require('../stats-glob');
 
 describe('statsGlob', function() {
   var stats = {

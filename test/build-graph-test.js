@@ -1,4 +1,4 @@
-var buildGraph = require('../build-graph');
+var buildGraph = require('../lib/build-graph');
 var assert = require('assert');
 
 function byTotalTime(node) {

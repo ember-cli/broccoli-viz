@@ -1,6 +1,6 @@
 'use strict';
 
 module.exports = {
-  dot: require('./dot'),
-  process: require('./process')
+  dot: require('./lib/dot'),
+  process: require('./lib/process')
 };
