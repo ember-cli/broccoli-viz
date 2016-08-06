@@ -24,7 +24,7 @@
     "mocha": "^3.0.1"
   },
   "dependencies": {
-    "blank-object": "^1.0.0",
+    "blank-object": "^1.0.1",
     "chalk": "^1.1.2",
     "deep-diff": "^0.3.4",
     "matcher-collection": "^1.0.2",
