@@ -6,6 +6,11 @@
   "bin": {
     "broccoli-viz": "./bin/broccoli-viz"
   },
+  "files": [
+    "index.js",
+    "lib/",
+    "bin/"
+  ],
   "scripts": {
     "test": "mocha test",
     "test:debug": "mocha --no-timeouts debug test/"

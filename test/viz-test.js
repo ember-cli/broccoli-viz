@@ -1,9 +1,9 @@
-var dot = require('../dot');
+var dot = require('../lib/dot');
+var rank = require('../lib/rank');
+var processGraph  = require('../lib/process');
+var nodesById = require('../lib/nodes-by-id');
+var buildGraph = require('../lib/build-graph');
 var assert = require('assert');
-var rank = require('../rank');
-var processGraph  = require('../process');
-var nodesById = require('../nodes-by-id');
-var buildGraph = require('../build-graph');
 
 describe('dot', function() {
   var a = {
