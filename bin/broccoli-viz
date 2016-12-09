@@ -4,14 +4,15 @@ var viz = require('..');
 var fs = require('fs');
 
 var argv = require('minimist')(process.argv.slice(2));
+var USAGE = 'Usage: broccoli-viz [--root-id=id] [--stats=pattern] FILE ';
 
 function usage() {
-  console.error('Usage: broccoli-viz [--stats=pattern] FILE');
+  console.error(USAGE);
   process.exit(1);
 }
 
 function help() {
-  console.log('Usage: broccoli-viz [--stats=pattern] FILE');
+  console.log(uSAGE);
   process.exit(0);
 }
 
@@ -31,6 +32,5 @@ if (patterns && !Array.isArray(patterns)) {
   patterns = [patterns];
 }
 
-console.log(viz.dot(viz.process(json.nodes), { stats: patterns }));
-
+console.log(viz.dot(viz.process(json.nodes, argv)));
 
