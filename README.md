@@ -48,3 +48,18 @@ broccoli-viz --stats='time.*' --stats='fs.lstatSync.count' --stats='fs.mkdirSync
 # Show all stats
 broccoli-viz --stats='*' broccoli-viz.0.json > broccoli-viz.0.dot
 ```
+
+
+### Render subtree
+
+If you want to render only a subtree, `--root-id=:id` where `:id` is the id of the
+root of the subgraph we wish to render
+
+If no `--root-id` option is passed, the full graph is rendered
+
+Examples:
+
+```sh
+# only renders 255 and its descendents
+broccoli-viz --root-id=255 broccoli-viz.0.json > broccoli-viz.0.dot
+```
