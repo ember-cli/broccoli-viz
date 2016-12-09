@@ -12,7 +12,7 @@ function usage() {
 }
 
 function help() {
-  console.log(uSAGE);
+  console.log(USAGE);
   process.exit(0);
 }
 
