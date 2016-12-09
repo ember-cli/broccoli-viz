@@ -81,7 +81,7 @@ describe('buildGraph', function() {
     assert.deepEqual(graph.nodesById[4], node4);
   });
 
-it('handles subgraphs starting at root-id', function() {
+  it('handles subgraphs starting at root-id', function() {
     var root = {
       _id: 1,
       stats: {
