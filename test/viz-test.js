@@ -30,43 +30,43 @@ describe('dot', function() {
   it('displays self and total time by default', function() {
     var result = dot(processGraph([a]));
 
-    assert.equal(result, 'digraph G { ratio = \"auto\" 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\" 1 \na\n time.self (40ms) \n time.total (40ms) \n \"]\n}');
+    assert.equal(result, 'digraph G { ratio = \"auto\"\n 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\"1\\na\\ntime.self (40ms)\\ntime.total (40ms)\"]\n}');
 
     result = dot(processGraph([a], { stats: null }));
 
-    assert.equal(result, 'digraph G { ratio = \"auto\" 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\" 1 \na\n time.self (40ms) \n time.total (40ms) \n \"]\n}');
+    assert.equal(result, 'digraph G { ratio = \"auto\"\n 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\"1\\na\\ntime.self (40ms)\\ntime.total (40ms)\"]\n}');
 
     result = dot(processGraph([a], { stats: undefined }));
 
-    assert.equal(result, 'digraph G { ratio = \"auto\" 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\" 1 \na\n time.self (40ms) \n time.total (40ms) \n \"]\n}');
+    assert.equal(result, 'digraph G { ratio = \"auto\"\n 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\"1\\na\\ntime.self (40ms)\\ntime.total (40ms)\"]\n}');
   });
 
   it('can display stats matching a glob', function() {
     var result = dot(processGraph([a]), { stats: ['time.self'] });
 
-    assert.equal(result, 'digraph G { ratio = \"auto\" 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\" 1 \na\n time.self (40ms) \n \"]\n}');
+    assert.equal(result, 'digraph G { ratio = \"auto\"\n 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\"1\\na\\ntime.self (40ms)\"]\n}');
 
     result = dot(processGraph([a]), { stats: ['fs.*.count'] });
 
-    assert.equal(result, 'digraph G { ratio = \"auto\" 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\" 1 \na\n fs.lstatSync.count (10) \n fs.openSync.count (2) \n \"]\n}');
+    assert.equal(result, 'digraph G { ratio = \"auto\"\n 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\"1\\na\\nfs.lstatSync.count (10)\\nfs.openSync.count (2)\"]\n}');
   });
 
   it('treats stats named time as nanoseconds', function() {
     result = dot(processGraph([a]), { stats: ['fs.lstatSync.*'] });
 
-    assert.equal(result, 'digraph G { ratio = \"auto\" 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\" 1 \na\n fs.lstatSync.count (10) \n fs.lstatSync.time (20ms) \n \"]\n}');
+    assert.equal(result, 'digraph G { ratio = \"auto\"\n 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\"1\\na\\nfs.lstatSync.count (10)\\nfs.lstatSync.time (20ms)\"]\n}');
   });
 
   it('aliases totalTime to time.total', function() {
     var result = dot(processGraph([a]), { stats: ['time.total'] });
 
-    assert.equal(result, 'digraph G { ratio = \"auto\" 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\" 1 \na\n time.total (40ms) \n \"]\n}');
+    assert.equal(result, 'digraph G { ratio = \"auto\"\n 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\"1\\na\\ntime.total (40ms)\"]\n}');
   });
 
   it('can display stats matching multiple globs', function() {
     var result = dot(processGraph([a]), { stats: ['time.*', 'fs.*.count'] });
 
-    assert.equal(result, 'digraph G { ratio = \"auto\" 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\" 1 \na\n time.self (40ms) \n time.total (40ms) \n fs.lstatSync.count (10) \n fs.openSync.count (2) \n \"]\n}');
+    assert.equal(result, 'digraph G { ratio = \"auto\"\n 1 [shape=box, style=solid, colorscheme=\"rdylbu9\", color=7, label=\"1\\na\\ntime.self (40ms)\\ntime.total (40ms)\\nfs.lstatSync.count (10)\\nfs.openSync.count (2)\"]\n}');
   });
 });
 
