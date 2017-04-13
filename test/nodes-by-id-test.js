@@ -1,3 +1,5 @@
+'use strict';
+
 const assert = require('assert');
 const nodesById = require('../lib/nodes-by-id');
 
