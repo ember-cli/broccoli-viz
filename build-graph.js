@@ -1,4 +1,5 @@
 var nodesById = require('./nodes-by-id');
+const normalizeNodes = require('./normalize-nodes');
 
 /**
   Annotate `node` with
@@ -34,10 +35,11 @@ function annotateNodes(graph) {
   return graph;
 }
 
-module.exports = function(nodes) {
-  var byId = nodesById(nodes);
+module.exports = function(inputNodes) {
+  let nodes = normalizeNodes(inputNodes);
+  let byId = nodesById(nodes);
 
-  var graph = {
+  let graph = {
     nodesById: byId,
     nodes: nodes,
   };

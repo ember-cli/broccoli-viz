@@ -59,8 +59,8 @@ module.exports = function dot(graph, options) {
   graph.nodes.forEach(function(node) {
     var selfTime = node.stats.time.self;
 
-    out += ' ' + node._id;
-    var annotation = node.id.name;
+    out += ' ' + node.id;
+    var annotation = node.label.name;
     annotation = annotation.replace('(', '\n(');
 
     var shape, style;
@@ -77,7 +77,7 @@ module.exports = function dot(graph, options) {
     }
 
     out += ' [shape=' + shape + ', style=' + style + ', colorscheme="rdylbu9", color=' + selfTimeColor(selfTime) +', label=" ' +
-       node._id + ' \n' +
+       node.id + ' \n' +
        annotation  + '\n' +
        statsString(node, patterns) +
        ' "]';
@@ -88,7 +88,7 @@ module.exports = function dot(graph, options) {
       // such doubts
       // var level = node.level + byId[child].level;
       var level = graph.nodesById[childId].stats._broccoli_viz.level;
-      out += ' ' + childId + ' -> ' + node._id + '[penwidth=' + penWidth(level) + ' ] \n';
+      out += ' ' + childId + ' -> ' + node.id + '[penwidth=' + penWidth(level) + ' ] \n';
     });
   });
   out += '}';
