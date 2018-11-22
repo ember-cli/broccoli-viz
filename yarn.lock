@@ -59,9 +59,9 @@ debug@3.1.0:
   dependencies:
     ms "2.0.0"
 
-deep-diff@^0.3.4:
-  version "0.3.4"
-  resolved "https://registry.npmjs.org/deep-diff/-/deep-diff-0.3.4.tgz#aac5c39952236abe5f037a2349060ba01b00ae48"
+deep-diff@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/deep-diff/-/deep-diff-1.0.2.tgz#afd3d1f749115be965e89c63edc7abb1506b9c26"
 
 diff@3.5.0:
   version "3.5.0"
