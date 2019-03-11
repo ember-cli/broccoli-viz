@@ -6,6 +6,9 @@
   "bin": {
     "broccoli-viz": "./bin/broccoli-viz"
   },
+  "engines": {
+    "node": "6.* || 8.* || >= 10.*"
+  },
   "files": [
     "index.js",
     "lib/",
@@ -32,7 +35,7 @@
     "blank-object": "^1.0.2",
     "chalk": "^2.0.0",
     "deep-diff": "^1.0.2",
-    "matcher-collection": "^1.1.2",
+    "matcher-collection": "^2.0.0",
     "minimist": "^1.2.0",
     "sprintf-js": "^1.0.3"
   }
