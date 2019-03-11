@@ -6,6 +6,9 @@
   "bin": {
     "broccoli-viz": "./bin/broccoli-viz"
   },
+  "engines": {
+    "node": "6.* || 8.* || >= 10.*"
+  },
   "files": [
     "index.js",
     "lib/",
