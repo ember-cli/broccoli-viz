@@ -32,5 +32,5 @@ if (patterns && !Array.isArray(patterns)) {
   patterns = [patterns];
 }
 
-console.log(viz.dot(viz.process(json.nodes, argv)));
+console.log(viz.dot(viz.process(json.nodes, argv), { stats: patterns }));
 
