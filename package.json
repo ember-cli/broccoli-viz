@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "blank-object": "^1.0.2",
-    "chalk": "^2.0.0",
+    "chalk": "^5.2.0",
     "deep-diff": "^1.0.2",
     "matcher-collection": "^2.0.1",
     "minimist": "^1.2.5",
